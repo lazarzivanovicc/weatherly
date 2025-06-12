@@ -67,9 +67,9 @@ if __name__ == "__main__":
     try:
         file_paths: List[str] = aws_utils.download_latest_from_s3("mlops-weather-data", "weather-features-v1/data", 1)
         df: pd.DataFrame = initialize_dataframe(file_paths[0])
-        
+        mlflow.set_tracking_uri("databricks")
         # Starting MLflow experiment
-        exp = mlflow.set_experiment("weather_tavg_prediction")
+        exp = mlflow.set_experiment("/Users/lazar.zivanovic11@gmail.com/weather_tavg_prediction")
         
         with mlflow.start_run(experiment_id=exp.experiment_id):
             # This will act as an ordinary Linear Regression since alpha is 0.0
@@ -88,7 +88,7 @@ if __name__ == "__main__":
             })
             mlflow.log_artifact(file_paths[0]) # Log the dataset
             # Maybe log the plot of actual vs predictions
-            mlflow.log_artifact(predictions[["actual", "prediction"]].plot())
+            # mlflow.log_artifact(predictions[["actual", "prediction"]].plot())
             # Tags
             mlflow.set_tags({
                 "feature_version": "v1",
@@ -97,9 +97,18 @@ if __name__ == "__main__":
             })    
 
             # Log model and save it to registry  
-            mlflow.sklearn.log_model(sk_model=ridge_regression,
+            model_info = mlflow.sklearn.log_model(sk_model=ridge_regression,
                                      name="tavg-prediction-model",
-                                     registered_model_name="sk-learn-ridge-tavg-prediction-model")
+                                     input_example=df[predictors].sample(1),
+                                     registered_model_name="workspace.default.sk-learn-ridge-tavg-prediction-model")
+            # Set alias
+            client: mlflow.MlflowClient = mlflow.MlflowClient()
+            # This is a bit of hack - the last model in my model registry will be aliased as champ
+            latest_champ_version: int = int(client.get_model_version_by_alias("workspace.default.sk-learn-ridge-tavg-prediction-model", "champ").version) 
+            client.set_registered_model_alias(
+                name="workspace.default.sk-learn-ridge-tavg-prediction-model",
+                alias="champ",
+                version=latest_champ_version + 1)
 
 
     except Exception as e:

@@ -2,8 +2,8 @@ name: data-ingestion-pipeline
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '25 19 * * *' 
+  #schedule:
+  #  - cron: '0 2 * * *' I will keep this commented for now since I know it works
 
 jobs:
   run-data-ingestion-pipeline:
