@@ -1,0 +1,31 @@
+name: data-ingestion-pipeline
+
+on:
+  schedule:
+    - cron: 40 19 * * * 
+
+job:
+  run-data-ingestion-pipeline:
+    runs-on: ubuntu-latest
+    environment: default
+    steps:
+      - name: Chekout repo content
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: Install dependencies 
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements
+      
+      - name: Run data ingestion script
+        env:
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: python data_ingestion.py
+
+
