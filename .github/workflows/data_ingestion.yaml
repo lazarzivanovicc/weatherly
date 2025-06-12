@@ -2,9 +2,9 @@ name: data-ingestion-pipeline
 
 on:
   schedule:
-    - cron: 40 18 * * * # This is UTC time
+    - cron: 56 18 * * * # This is UTC time
 
-job:
+jobs:
   run-data-ingestion-pipeline:
     runs-on: ubuntu-latest
     environment: default
