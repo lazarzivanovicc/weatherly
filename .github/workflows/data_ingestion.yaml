@@ -3,7 +3,7 @@ name: data-ingestion-pipeline
 on:
   workflow_dispatch:
   schedule:
-    - cron: 56 18 * * * # This is UTC time
+    - cron: '25 19 * * *' 
 
 jobs:
   run-data-ingestion-pipeline:
