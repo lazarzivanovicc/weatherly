@@ -3,47 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <title>Weatherly</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #ffffff);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #0077b6;
+    }
+
+    h3 {
+      font-weight: normal;
+      margin-bottom: 1.5rem;
+      color: #555;
+    }
+
+    pre {
+      font-size: 2rem;
+      color: #023e8a;
+      background-color: #f0f8ff;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2.2rem; }
+      pre { font-size: 1.5rem; }
+    }
+  </style>
 </head>
 <body>
 
   <h1>Weatherly</h1>
-  <h3 id="header">Belgrade's average temperature forecast for </h3>
+  <h3 id="header"><b>Belgrade's</b> average temperature forecast for</h3>
   <pre id="output">Loading...</pre>
-
   <script>
     addDateToHeader();
     fetchPredictions();
-    
+
     function fetchPredictions() {
-        fetch('https://weatherly-qgxj.onrender.com/api/latest-prediction')
+      fetch('https://weatherly-qgxj.onrender.com/api/latest-prediction')
         .then(response => response.json())
         .then(data => {
-            document.getElementById('output').textContent = parseFloat(data['prediction']).toPrecision(4);
+          document.getElementById('output').textContent = parseFloat(data['prediction']).toPrecision(4) + " °C";
         })
         .catch(error => {
-            document.getElementById('output').textContent = 'Error fetching data: ' + error;
+          document.getElementById('output').textContent = 'Error fetching data: ' + error;
         });
     }
 
-    
     function addDateToHeader() {
-        headerText = document.getElementById('header').innerHTML;
-        dateTomorrow = getTomorrowDate();
-        document.getElementById('header').innerHTML = headerText + " " + dateTomorrow;
+      const headerText = document.getElementById('header').innerHTML;
+      const dateTomorrow = getTomorrowDate();
+      document.getElementById('header').innerHTML = headerText + " " + dateTomorrow;
     }
 
     function getTomorrowDate() {
-        today = new Date();
-        today.setDate(today.getDate() + 1);
-        const options = {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            };
-        return today.toLocaleDateString(undefined, options);
+      const today = new Date();
+      today.setDate(today.getDate() + 1);
+      const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+      return today.toLocaleDateString(undefined, options);
     }
-
   </script>
 </body>
+<footer>Developed by Lazar Zivanovic</footer>
 </html>
