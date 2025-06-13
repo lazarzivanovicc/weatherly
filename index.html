@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weatherly</title>
+</head>
+<body>
+
+  <h1>Weatherly</h1>
+  <h3 id="header">Belgrade's average temperature forecast for </h3>
+  <pre id="output">Loading...</pre>
+
+  <script>
+    addDateToHeader();
+    fetchPredictions();
+    
+    function fetchPredictions() {
+        fetch('https://weatherly-qgxj.onrender.com/api/latest-prediction')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('output').textContent = parseFloat(data['prediction']).toPrecision(4);
+        })
+        .catch(error => {
+            document.getElementById('output').textContent = 'Error fetching data: ' + error;
+        });
+    }
+
+    
+    function addDateToHeader() {
+        headerText = document.getElementById('header').innerHTML;
+        dateTomorrow = getTomorrowDate();
+        document.getElementById('header').innerHTML = headerText + " " + dateTomorrow;
+    }
+
+    function getTomorrowDate() {
+        today = new Date();
+        today.setDate(today.getDate() + 1);
+        const options = {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            };
+        return today.toLocaleDateString(undefined, options);
+    }
+
+  </script>
+</body>
+</html>
