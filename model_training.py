@@ -13,6 +13,8 @@ from sklearn.linear_model import Ridge
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 logger: logging.Logger = logging.getLogger(__name__)
 
+REGISTERED_MODEL_NAME = "workspace.default.sk-learn-ridge-tavg-prediction-model"
+ALIAS = "champ"
 
 def initialize_dataframe(path: str) -> pd.DataFrame:
     """
@@ -100,14 +102,14 @@ if __name__ == "__main__":
             model_info = mlflow.sklearn.log_model(sk_model=ridge_regression,
                                      name="tavg-prediction-model",
                                      input_example=df[predictors].sample(1),
-                                     registered_model_name="workspace.default.sk-learn-ridge-tavg-prediction-model")
+                                     registered_model_name=REGISTERED_MODEL_NAME)
             # Set alias
             client: mlflow.MlflowClient = mlflow.MlflowClient()
             # This is a bit of hack - the last model in my model registry will be aliased as champ
-            latest_champ_version: int = int(client.get_model_version_by_alias("workspace.default.sk-learn-ridge-tavg-prediction-model", "champ").version) 
+            latest_champ_version: int = int(client.get_model_version_by_alias(REGISTERED_MODEL_NAME, ALIAS).version) 
             client.set_registered_model_alias(
-                name="workspace.default.sk-learn-ridge-tavg-prediction-model",
-                alias="champ",
+                name=REGISTERED_MODEL_NAME,
+                alias=ALIAS,
                 version=latest_champ_version + 1)
 
 

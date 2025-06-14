@@ -124,4 +124,6 @@ class AWSUtils:
                 
                 return file_paths
         except Exception as e:
-            raise
+            self.logger.error(f"Error while downloading from s3: {e}",
+                              exc_info=True)
+            raise 
