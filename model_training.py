@@ -3,18 +3,28 @@
 # 
 
 import logging
+import ssl
 from typing import List, Tuple
 import pandas as pd
 from aws_utils import AWSUtils
 import mlflow
 from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error
 from sklearn.linear_model import Ridge
+import smtplib
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 logger: logging.Logger = logging.getLogger(__name__)
 
 REGISTERED_MODEL_NAME = "workspace.default.sk-learn-ridge-tavg-prediction-model"
 ALIAS = "champ"
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL")  
+RECEIVER_EMAIL = os.environ.get("RECEIVER_EMAIL") 
+PASS = os.environ.get("GMAIL_PASS")
+MESSAGE = "Model training done!"
 
 def initialize_dataframe(path: str) -> pd.DataFrame:
     """
@@ -61,6 +71,17 @@ def evals(df: pd.DataFrame) -> Tuple[float]:
    
    return mae, r2, mse
    
+
+def notify_via_email() -> None:
+   """
+   Notifies user via email once model training is completed
+   """
+   port = 465  # For SSL
+   smtp_server = "smtp.gmail.com"
+   context = ssl.create_default_context()
+   with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        server.login(SENDER_EMAIL, PASS)
+        server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, MESSAGE)
 
 
 if __name__ == "__main__":
@@ -111,6 +132,8 @@ if __name__ == "__main__":
                 name=REGISTERED_MODEL_NAME,
                 alias=ALIAS,
                 version=latest_champ_version + 1)
+            
+            notify_via_email()
 
 
     except Exception as e:
