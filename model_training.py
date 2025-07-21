@@ -76,10 +76,11 @@ def notify_via_email() -> None:
    """
    Notifies user via email once model training is completed
    """
-   port = 465  # For SSL
+   port = 587  
    smtp_server = "smtp.gmail.com"
    context = ssl.create_default_context()
-   with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+   with smtplib.SMTP(smtp_server, port) as server:
+        server.starttls(context=context)
         server.login(SENDER_EMAIL, PASS)
         server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, MESSAGE)
 
