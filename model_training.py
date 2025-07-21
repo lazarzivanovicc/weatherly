@@ -79,6 +79,7 @@ def notify_via_email() -> None:
    port = 587  
    smtp_server = "smtp.gmail.com"
    context = ssl.create_default_context()
+   context.minimum_version = ssl.TLSVersion.TLSv1_3
    with smtplib.SMTP(smtp_server, port) as server:
         server.starttls(context=context)
         server.login(SENDER_EMAIL, PASS)
